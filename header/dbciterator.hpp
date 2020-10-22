@@ -1,4 +1,9 @@
 /*
+ * @Date: 2020-10-22 19:24:15
+ * @LastEditors: Dash Zhou
+ * @LastEditTime: 2020-10-22 20:23:37
+ */
+/*
  * dbctree.hpp
  *
  *  Created on: 04.10.2013
@@ -10,6 +15,7 @@
 
 #include <vector>
 #include <iosfwd>
+#include <unordered_map>
 #include "message.hpp"
 
 /**
@@ -17,36 +23,35 @@
  * It enables its user to iterate over the Messages of a DBC-File
  */
 
-class DBCIterator {
+class DBCIterator
+{
 
-	typedef std::vector<Message> messages_t;
+	using MessageMap = std::unordered_map<MessageId, Message>;
+
 	//This list contains all the messages which got parsed from the DBC-File
-	messages_t messageList;
+	MessageMap messageMap;
 
 public:
-	typedef messages_t::const_iterator const_iterator;
+	using const_iterator = MessageMap::const_iterator;
 
 	//Constructors taking either a File or a Stream of a DBC-File
-	explicit DBCIterator(const std::string& filePath);
-	explicit DBCIterator(std::istream& stream);
+	explicit DBCIterator(const std::string &filePath);
+	explicit DBCIterator(std::istream &stream);
 
 	/*
 	 * Functionality to access the Messages parsed from the File
 	 * either via the iterators provided by begin() and end() or by
 	 * random access operator[]
 	 */
-	const_iterator begin() const { return messageList.begin(); }
-	const_iterator end() const { return messageList.end(); }
-	messages_t::const_reference operator[](std::size_t elem) const {
-		return messageList[elem];
+	const_iterator begin() const { return messageMap.begin(); }
+	const_iterator end() const { return messageMap.end(); }
+	Message operator[](MessageId id)
+	{
+		return messageMap[id];
 	}
 
 private:
-	void init(std::istream& stream);
-
+	void init(std::istream &stream);
 };
-
-
-
 
 #endif /* DBCTREE_HPP_ */

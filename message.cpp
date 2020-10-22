@@ -1,4 +1,9 @@
 /*
+ * @Date: 2020-10-22 19:24:15
+ * @LastEditors: Dash Zhou
+ * @LastEditTime: 2020-10-22 20:31:57
+ */
+/*
  * message.cpp
  *
  *  Created on: 04.10.2013
@@ -10,11 +15,13 @@
 #include <limits>
 #include <algorithm>
 
-std::istream& operator>>(std::istream& in, Message& msg) {
+std::istream &operator>>(std::istream &in, Message &msg)
+{
 	std::string preamble;
 	in >> preamble;
 	//Check if we are actually reading a Message otherwise fail the stream
-	if (preamble != "BO_") {
+	if (preamble != "BO_")
+	{
 		in.setstate(std::ios_base::failbit);
 		return in;
 	}
@@ -36,11 +43,14 @@ std::istream& operator>>(std::istream& in, Message& msg) {
 	in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	//As long as there is a Signal, parse the Signal
-	while(in) {
+	while (in)
+	{
 		Signal sig;
 		in >> sig;
-		if (in) {
-			msg.signals.push_back(sig);
+		if (in)
+		{
+			//msg.signals.push_back(sig);
+			msg.signalMap[sig.getName()] = sig;
 		}
 	}
 
@@ -48,11 +58,12 @@ std::istream& operator>>(std::istream& in, Message& msg) {
 	return in;
 }
 
-
-std::set<std::string> Message::getTo() const {
+std::set<std::string> Message::getTo() const
+{
 	std::set<std::string> collection;
-	for (auto sig : signals) {
-		auto toList = sig.getTo();
+	for (auto sig : signalMap)
+	{
+		auto toList = sig.second.getTo();
 		collection.insert(toList.begin(), toList.end());
 	}
 	return collection;
